@@ -18,7 +18,11 @@ export default async function handler(
       return res.status(400).json({ message: 'Invalid or empty answers provided' });
     }
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("API_KEY environment variable is not set.");
+    }
+    const ai = new GoogleGenAI({ apiKey });
 
     const answersText = answers
       .map(a => `Vraag: ${a.question}\nAntwoord: ${a.answer}`)
@@ -74,6 +78,11 @@ Het rapport moet strikt voldoen aan het volgende JSON-schema. De 'summary' moet 
     });
 
     const reportJsonString = result.text;
+    
+    if (!reportJsonString || typeof reportJsonString !== 'string') {
+        throw new Error('API response was empty or not a string.');
+    }
+
     const report: ReportData = JSON.parse(reportJsonString);
 
     return res.status(200).json(report);
