@@ -79,16 +79,16 @@ Het rapport moet strikt voldoen aan het volgende JSON-schema. De 'summary' moet 
 
     const reportJsonString = result.text;
     
-    if (!reportJsonString || typeof reportJsonString !== 'string') {
-        throw new Error('API response was empty or not a string.');
+    if (reportJsonString) {
+        const report: ReportData = JSON.parse(reportJsonString);
+        return res.status(200).json(report);
+    } else {
+        // This will be caught by the catch block below
+        throw new Error('API response did not contain a valid text part.');
     }
 
-    const report: ReportData = JSON.parse(reportJsonString);
-
-    return res.status(200).json(report);
-
   } catch (error) {
-    console.error('Error generating summary with Gemini:', error);
+    console.error('Error in generate-summary handler:', error);
     const defaultReport: ReportData = {
         summary: "We konden op dit moment uw gepersonaliseerde rapport niet genereren. Dit kan gebeuren als er een probleem is met de server of de API-configuratie.",
         steps: [
