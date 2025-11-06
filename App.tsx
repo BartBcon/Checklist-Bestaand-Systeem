@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import WelcomeScreen from './components/WelcomeScreen';
 import Questionnaire from './components/Questionnaire';
@@ -7,15 +6,6 @@ import type { UserData, Answer } from './types';
 import { CHECKLIST_QUESTIONS } from './constants';
 
 type AppStep = 'questionnaire' | 'leadCapture' | 'completion';
-
-// Define the shape of the global config object for TypeScript
-declare global {
-  interface Window {
-    APP_CONFIG: {
-      GOOGLE_APP_SCRIPT_URL: string;
-    }
-  }
-}
 
 const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>('questionnaire');
@@ -28,32 +18,30 @@ const App: React.FC = () => {
   const handleLeadSubmit = useCallback(async (data: UserData) => {
     setUserData(data);
 
-    // --- Integratie voor Google Sheets & E-mail ---
-    const GOOGLE_APP_SCRIPT_URL = window.APP_CONFIG?.GOOGLE_APP_SCRIPT_URL;
+    const submissionData = {
+      user: data,
+      answers: answers.filter(a => a !== null)
+    };
 
-    // We sturen de data alleen als de URL is ingevuld.
-    if (GOOGLE_APP_SCRIPT_URL && GOOGLE_APP_SCRIPT_URL.startsWith('https://')) {
-      const submissionData = {
-        user: data,
-        answers: answers.filter(a => a !== null)
-      };
+    try {
+      // Verstuur de data naar een veilige backend-endpoint.
+      // Deze endpoint zal de data vervolgens doorsturen naar Google Sheets.
+      const response = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-      try {
-        await fetch(GOOGLE_APP_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submissionData),
-        });
-      } catch (error) {
-        console.error('Fout bij het versturen van data naar Google Sheet:', error);
+      if (!response.ok) {
+        // Log de fout, maar de gebruiker kan doorgaan.
+        console.error('Serverfout bij het versturen van lead data:', response.statusText);
       }
-    } else {
-      console.warn('GOOGLE_APP_SCRIPT_URL is not configured in index.html. Form data will not be sent.');
+
+    } catch (error) {
+      console.error('Fout bij het versturen van lead data naar de server:', error);
     }
-    // --- Einde Integratie ---
 
     setStep('completion');
   }, [answers]);

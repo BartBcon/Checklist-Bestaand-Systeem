@@ -9,23 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!--
-      BELANGRIJKE CONFIGURATIE
-      Plaats hier uw configuratievariabelen.
-    -->
-    <script>
-      window.APP_CONFIG = {
-        // Plaats hier de volledige URL van uw Google Apps Script Web App.
-        // Voorbeeld: 'https://script.google.com/macros/s/ABCDEFG.../exec'
-        GOOGLE_APP_SCRIPT_URL: ''
-      };
-
-      // Controleer of de URL is ingevuld.
-      if (!window.APP_CONFIG.GOOGLE_APP_SCRIPT_URL) {
-        console.warn("WAARSCHUWING: GOOGLE_APP_SCRIPT_URL is niet ingesteld in index.html. Formulierdata wordt niet opgeslagen in Google Sheets.");
-      }
-    </script>
-    
     <!-- SystemJS and Babel for robust in-browser transpilation -->
     <script src="https://unpkg.com/systemjs@6.14.3/dist/s.min.js"></script>
     <script src="https://unpkg.com/systemjs-plugin-babel@0.0.25/plugin-babel.js"></script>
@@ -58,7 +41,8 @@
       System.import('./index.tsx').catch(function(err) {
         console.error("Error loading application:", err);
         const root = document.getElementById('root');
-        if (root) {
+        // Voorkom dat de configuratiefout wordt overschreven
+        if (root && !root.innerHTML.includes('Configuratiefout')) {
             root.innerHTML = '<div style="padding: 20px; text-align: center; font-family: sans-serif; background-color: #ffebee; color: #c62828; border: 1px solid #c62828; border-radius: 8px;">' +
                              '<h1>Fout bij het laden van de applicatie</h1>' +
                              '<p>Er is een technische fout opgetreden. Controleer de browser console (F12) voor details.</p>' +
@@ -72,7 +56,8 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0"
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
+    "@vercel/node": "https://aistudiocdn.com/@vercel/node@^5.5.4"
   }
 }
 </script>
