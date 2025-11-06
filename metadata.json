@@ -1,0 +1,5 @@
+{
+  "name": "HVAC to BMS Compatibility Checklist",
+  "description": "An interactive checklist for Dutch professionals to determine if their existing HVAC system is compatible with a Building Management System (gebouwbeheersysteem). Captures leads by providing a personalized compatibility report via the Gemini API.",
+  "requestFramePermissions": []
+}

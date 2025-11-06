@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HVAC to BMS Compatibility Checklist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!--
+      BELANGRIJKE CONFIGURATIE
+      Plaats hier uw configuratievariabelen.
+    -->
+    <script>
+      window.APP_CONFIG = {
+        // Plaats hier de volledige URL van uw Google Apps Script Web App.
+        // Voorbeeld: 'https://script.google.com/macros/s/ABCDEFG.../exec'
+        GOOGLE_APP_SCRIPT_URL: ''
+      };
+
+      // Controleer of de URL is ingevuld.
+      if (!window.APP_CONFIG.GOOGLE_APP_SCRIPT_URL) {
+        console.warn("WAARSCHUWING: GOOGLE_APP_SCRIPT_URL is niet ingesteld in index.html. Formulierdata wordt niet opgeslagen in Google Sheets.");
+      }
+    </script>
+    
+    <!-- SystemJS and Babel for robust in-browser transpilation -->
+    <script src="https://unpkg.com/systemjs@6.14.3/dist/s.min.js"></script>
+    <script src="https://unpkg.com/systemjs-plugin-babel@0.0.25/plugin-babel.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+      // Configure SystemJS to load and transpile the app
+      System.config({
+        baseURL: './', // Use current directory for relative paths
+        transpiler: 'plugin-babel',
+        babelOptions: {
+          presets: [ 'react', 'typescript' ]
+        },
+        // Tell SystemJS to use Babel for .ts and .tsx files
+        meta: {
+          '*.tsx': { loader: 'plugin-babel' },
+          '*.ts': { loader: 'plugin-babel' }
+        },
+        // Map external dependencies
+        map: {
+          'plugin-babel': 'https://unpkg.com/systemjs-plugin-babel@0.0.25/plugin-babel.js',
+          'systemjs-babel-build': 'https://unpkg.com/systemjs-plugin-babel@0.0.25/systemjs-babel-7.16.6.js',
+          'react': 'https://esm.sh/react@18.2.0',
+          'react-dom/client': 'https://esm.sh/react-dom@18.2.0/client',
+          '@google/genai': 'https://esm.sh/@google/genai'
+        }
+      });
+
+      // Start the application by importing the main file
+      System.import('./index.tsx').catch(function(err) {
+        console.error("Error loading application:", err);
+        const root = document.getElementById('root');
+        if (root) {
+            root.innerHTML = '<div style="padding: 20px; text-align: center; font-family: sans-serif; background-color: #ffebee; color: #c62828; border: 1px solid #c62828; border-radius: 8px;">' +
+                             '<h1>Fout bij het laden van de applicatie</h1>' +
+                             '<p>Er is een technische fout opgetreden. Controleer de browser console (F12) voor details.</p>' +
+                             '</div>';
+        }
+      });
+    </script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-100">
+    <div id="root"></div>
+  </body>
+</html>
